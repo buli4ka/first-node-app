@@ -1,0 +1,4 @@
+{
+    "port": 8080,
+    "mongoUri": "mongodb+srv://buli4ka:buli4ka@jsnodeapp.smcf0.mongodb.net/WebApp?retryWrites=true&w=majority"
+}
