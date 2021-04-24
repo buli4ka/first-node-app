@@ -1,11 +1,25 @@
 const { Router } = require("express")
 const User = require("../models/User")
 const bcrypt = require("bcryptjs")
+const { check, validationResult } = require("express-validator")
+const jwt = require("jsonwebtoken")
+const config = require("config")
+
 
 const router = Router()
 
-router.post('/register', async(req, res) => {
+router.post('/register', [
+    check("email", "Not valid email").isEmail,
+    check("password", "required lengths is 1").isLength({ min: 1 })
+], async(req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array(),
+                message: "Invalid registration data"
+            })
+        }
         const { email, password } = req.body
         const candidate = await User.FindOne({ email })
         if (candidate) {
@@ -23,11 +37,35 @@ router.post('/register', async(req, res) => {
 })
 
 
-router.post('/login', async(req, res) => {
+router.post('/login', [
+    check("email", "Not valid email").normalizeEmail().isEmail,
+    check("password", "Enter password").exists()
+], async(req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array(),
+                message: "Invalid registration data"
+            })
+        }
+        const { email, password } = req.body
+        const user = await User.FindOne({ email })
+        if (!user) {
+            return res.status(400).json({ message: "User not found" })
+        }
+        const isMatch = bcrypt.compare(password, user.password)
+        if (!isMatch) {
+            return res.status(400).json({ message: "Incorrect password" })
+        }
+        const token = jwt.sign({ userId: user.id },
+            config.get('jwtSecret'), {
+                expiresIn: "1h"
+            })
+        res.json({ token, userId: user.id })
 
     } catch (e) {
-
+        res.status(500).json({ message: "Something gone wrong, try again" })
     }
 })
 
