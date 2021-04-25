@@ -13,6 +13,7 @@ router.post('/register', [
     check("password", "required lengths is 1").isLength({ min: 1 })
 ], async(req, res) => {
     try {
+        console.log("Body server output - ",req.body)
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             return res.status(400).json({
