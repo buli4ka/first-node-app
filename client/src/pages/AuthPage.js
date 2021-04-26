@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import { compareSync } from 'bcryptjs'
+import React, {useContext, useEffect, useState } from 'react'
 import { useHttp } from '../hooks/http.hook'
 import { useMessage } from '../hooks/message.hook'
+import{AuthContext} from '../context/AuthContext'
 
 const DOMAIN = "http://localhost:5000"
 
 export const AuthPage = () => {
+  const auth = useContext(AuthContext)
   const message = useMessage()
   const {loading,error,request,clearError } = useHttp()
   const [form,setForm]=useState({
@@ -24,6 +27,12 @@ export const AuthPage = () => {
     try {
       const data = await request(DOMAIN+"/api/auth/register", 'POST', {...form})
       console.log(data)
+    } catch (e) {}
+  }
+  const loginHandler = async () =>{
+    try {
+      const data = await request(DOMAIN+"/api/auth/login", 'POST', {...form})
+     auth.login(data.token,data.userId)
     } catch (e) {}
   }
     return (
@@ -46,7 +55,7 @@ export const AuthPage = () => {
                     </div>                   
                   </div>  
                   <div className="card-action">
-                   <button className="btn yellow darken-4" disabled={loading} style={{marginRight:10}}>Enter</button>
+                   <button className="btn yellow darken-4" disabled={loading} onClick={loginHandler} style={{marginRight:10}}>Enter</button>
                    <button className="btn gray lighten-1 black-text" onClick={registerHandler} disabled={loading}>Register</button>
                   </div>
                 </div>

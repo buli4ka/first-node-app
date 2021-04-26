@@ -25,7 +25,6 @@ router.post('/register',[
 
         
         const { email, password } = req.body
-        console.log("Body server output - ",req.body)
         const candidate = await User.findOne({ email })
         
         if (candidate) {
@@ -47,7 +46,7 @@ router.post('/register',[
 
 
 router.post('/login', [
-    check("email", "Not valid email").normalizeEmail().isEmail,
+    check("email", "Not valid email").normalizeEmail().isEmail(),
     check("password", "Enter password").exists()
 ], async(req, res) => {
     try {
@@ -55,15 +54,15 @@ router.post('/login', [
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 errors: errors.array(),
-                message: "Invalid registration data"
+                message: "Invalid login data"
             })
         }
         const { email, password } = req.body
-        const user = await User.FindOne({ email })
+        const user = await User.findOne({ email })
         if (!user) {
             return res.status(400).json({ message: "User not found" })
         }
-        const isMatch = bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
             return res.status(400).json({ message: "Incorrect password" })
         }
