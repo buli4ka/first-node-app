@@ -1,10 +1,9 @@
-import { compareSync } from 'bcryptjs'
 import React, {useContext, useEffect, useState } from 'react'
 import { useHttp } from '../hooks/http.hook'
 import { useMessage } from '../hooks/message.hook'
 import{AuthContext} from '../context/AuthContext'
 
-const DOMAIN = "http://localhost:5000"
+const {DOMAIN} = require('../config/config')
 
 export const AuthPage = () => {
   const auth = useContext(AuthContext)
@@ -44,11 +43,11 @@ export const AuthPage = () => {
                     <span className="card-title">Authorization</span>
                     <div>
                       <div className="input-field">
-                        <input  id="email" name ="email" type="text" onChange={changeHandler}/>
+                        <input  id="email" name ="email" type="text"value={form.email} onChange={changeHandler}/>
                         <label htmlFor="email">Email</label>
                     </div>
                     <div className="input-field">
-                        <input  id="password" name ="password" type="password" onChange={changeHandler} />
+                        <input  id="password" name ="password" type="password"value={form.password} onChange={changeHandler} />
                         <label htmlFor="password">Password</label>
                     </div>
                      
