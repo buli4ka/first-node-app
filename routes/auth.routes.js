@@ -40,10 +40,8 @@ router.post('/register',[
     } catch (e) {
         res.status(500).json({ message: "Something gone wrong, try again" })
     }
-    
-    
+        
 })
-
 
 router.post('/login', [
     check("email", "Not valid email").normalizeEmail().isEmail(),
